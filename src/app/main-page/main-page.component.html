@@ -1,0 +1,17 @@
+<div class="top-bar">
+    <h1>Asset and Liability Calculator</h1>
+  </div>
+  
+  <section class="total-budget-section">
+    <h2 [ngClass]="{ 'red': totalBudget < 0, 'green': totalBudget > 0 }">{{ totalBudget }}</h2>
+  </section>
+  
+  <section class="add-record-section">
+    <div class="add-record-container">
+      <app-add-record-form style="padding: 20px;" (formSubmit)="addItem($event)"></app-add-record-form>
+    </div>
+  </section>
+  
+  <hr style="margin-top: 0">
+  
+  <app-record-item-list [budgetItems]="budgetItems" (delete)="deleteItem($event)" (update)="updateItem($event)"></app-record-item-list>
