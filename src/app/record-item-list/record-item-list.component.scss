@@ -1,0 +1,53 @@
+@import '../../main-styles.scss';
+
+.record-items-section {
+    display: flex;
+    padding: 50px;
+
+    // Horizontally and vertically center flex children
+    justify-content: center;
+    align-items: center;
+    
+    .record-items-container {
+        display: flex;
+        max-width: 680px;
+        height: 100%;
+        width: 100%;
+
+        .asset-column, .liabilities-column {
+            display: flex;
+            flex-direction: column;
+            flex-basis: 0; // for the columns to be the same size, regardless of content
+            flex-grow: 1;
+
+            h1 {
+                font-family: 'Lato';
+                font-size: 24px;
+                font-weight: 900;
+                text-transform: uppercase;
+            }
+
+            .record-items {
+                display: flex;
+                flex-direction: column;
+
+                margin-top: 20px;
+            }
+        }
+
+        .asset-column {
+            margin-right: 35px;
+
+            h1 {
+                color: $green;
+            }
+        }
+
+        .liabilities-column {
+
+            h1 {
+                color: $red;
+            }
+        }
+    }
+}

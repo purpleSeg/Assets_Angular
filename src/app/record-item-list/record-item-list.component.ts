@@ -2,6 +2,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { RecordItem } from 'src/shared/models/record-item.model';
 import { MatDialog } from '@angular/material/dialog';
 import { EditRecordModalComponent } from '../edit-record-modal/edit-record-modal.component';
+import { catchError } from 'rxjs/internal/operators';
+import { Observable, throwError } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-record-item-list',
@@ -10,17 +13,76 @@ import { EditRecordModalComponent } from '../edit-record-modal/edit-record-modal
 })
 export class RecordItemListComponent implements OnInit {
 
-  @Input() budgetItems: RecordItem[];
+  @Input() recordItems: RecordItem[];
   @Output() delete: EventEmitter<RecordItem> = new EventEmitter<RecordItem>();
   @Output() update: EventEmitter<UpdateEvent> = new EventEmitter<UpdateEvent>();
 
-  constructor(public dialog: MatDialog) { }
+  endpoint = "http://localhost:8080/";
 
-  ngOnInit() {
+  constructor(public dialog: MatDialog, private http: HttpClient) { }
+
+  totalAssets;
+  totalLiabilities;
+
+  async ngOnInit() {
+    const delay = async (ms: number) => new Promise(res => setTimeout(res, ms));
+    await delay(200);
+    this.getTotalAssets().subscribe(totalAssets => this.totalAssets = totalAssets);
+    await delay(200);
+    this.getTotalLiabilities().subscribe(totalLiabilities => this.totalLiabilities = totalLiabilities);
   }
 
-  onDeleteButtonClicked(item: RecordItem) {
+  getTotalAssets(): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': 'Basic ' + btoa('user:password'),
+        'Access-Control-Allow-Origin': '*'
+      })
+    };
+    const response = this.http.get<number>(this.endpoint + "assetsTotal/", httpOptions).pipe(
+      catchError(this.handleError)
+    );
+    response.subscribe();
+    return response;
+    
+  }
+
+  getTotalLiabilities(): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': 'Basic ' + btoa('user:password'),
+        'Access-Control-Allow-Origin': '*'
+      })
+    };
+    const response = this.http.get<number>(this.endpoint + "liabilitiesTotal/", httpOptions).pipe(
+      catchError(this.handleError)
+    );
+    response.subscribe();
+    return response;
+    
+  }
+
+  async onDeleteButtonClicked(item: RecordItem) {
     this.delete.emit(item);
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Authorization': 'Basic ' + btoa('user:password'),
+        'Access-Control-Allow-Origin': '*'
+      })
+    };
+    const response = this.http.delete<RecordItem>(this.endpoint + "deleteRecord/" + item.description + "/", httpOptions).pipe(
+      catchError(this.handleError)
+    );
+    response.subscribe();
+
+    const delay = async (ms: number) => new Promise(res => setTimeout(res, ms));
+    await delay(200);
+    this.getTotalAssets().subscribe(totalAssets => this.totalAssets = totalAssets);
+    await delay(200);
+    this.getTotalLiabilities().subscribe(totalLiabilities => this.totalLiabilities = totalLiabilities);
   }
 
   onCardClicked(item: RecordItem) {
@@ -39,6 +101,17 @@ export class RecordItemListComponent implements OnInit {
         });
       }
     })
+  }
+  private handleError(error: HttpErrorResponse): any {
+    if (error.error instanceof ErrorEvent) {
+      console.error('An error occurred:', error.error.message);
+    } else {
+      console.error(
+        `Backend returned code ${error.status}, ` +
+        `body was: ${error.error}`);
+    }
+    return throwError(
+      'Something bad happened; please try again later.');
   }
 
 }

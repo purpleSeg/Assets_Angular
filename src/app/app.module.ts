@@ -11,6 +11,7 @@ import { AddRecordFormComponent } from './add-record-form/add-record-form.compon
 import { EditRecordModalComponent } from './edit-record-modal/edit-record-modal.component';
 import { RecordItemCardComponent } from './record-item-list/record-item-card/record-item-card.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http'
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppRoutingModule,
     FormsModule,
     BrowserAnimationsModule,
-    MatDialogModule
+    MatDialogModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
